@@ -110,6 +110,18 @@ cd frontend
 npm install
 npm run dev
 ```
+## 🔑 Environment Variables
+
+Create a `.env` file inside the `Backend` directory and add the following variables:
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+GROQ_API_KEY=your_groq_api_key
+CLIENT_URL=http://localhost:5173
+```
 
 
 ---
