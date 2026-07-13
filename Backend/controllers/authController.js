@@ -8,6 +8,10 @@ import { isValidEmail, isValidPassword } from '../utils/validators.js';
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
+  console.log("========== REGISTER DEBUG ==========");
+  console.log("Name:", name);
+  console.log("Email:", email);
+
   if (!name || !email || !password) {
     res.status(400);
     throw new Error('Please add all fields');
@@ -25,6 +29,8 @@ export const registerUser = async (req, res) => {
 
   const userExists = await User.findOne({ email });
 
+  console.log("User Exists:", userExists);
+
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
@@ -36,8 +42,11 @@ export const registerUser = async (req, res) => {
     password
   });
 
+  console.log("Created User:", user);
+
   if (user) {
     generateToken(res, user._id);
+
     res.status(201).json({
       user: {
         _id: user._id,
@@ -58,7 +67,17 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log("========== LOGIN DEBUG ==========");
+  console.log("Email:", email);
+
   const user = await User.findOne({ email });
+
+  console.log("User Found:", user);
+
+  if (user) {
+    const passwordMatch = await user.matchPassword(password);
+    console.log("Password Match:", passwordMatch);
+  }
 
   if (user && !user.isActive) {
     res.status(401);
@@ -67,6 +86,7 @@ export const loginUser = async (req, res) => {
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
+
     res.json({
       user: {
         _id: user._id,
@@ -89,14 +109,16 @@ export const logoutUser = (req, res) => {
     httpOnly: true,
     expires: new Date(0)
   });
-  res.status(200).json({ message: 'Logged out successfully' });
+
+  res.status(200).json({
+    message: 'Logged out successfully'
+  });
 };
 
 // @desc    Get current logged in user
 // @route   GET /api/auth/me
 // @access  Private
 export const getMe = async (req, res) => {
-  // req.user is set by the protect middleware
   res.status(200).json({
     user: {
       _id: req.user._id,
