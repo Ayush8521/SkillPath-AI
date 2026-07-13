@@ -70,14 +70,13 @@ app.use('/api/learning', learningRoutes);
 // Health check endpoint
 app.get('/api/health', (req, res) => res.json({ status: 'ok', message: 'SkillPath AI API is running' }));
 
-// Serve frontend in production (optional for monolithic deployments)
-if (process.env.NODE_ENV === 'production') {
-  const __dirname = path.resolve();
-  app.use(express.static(path.join(__dirname, '../skillpath-frontend/dist')));
-  app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, '../skillpath-frontend/dist', 'index.html')));
-} else {
-  app.get('/', (req, res) => res.send('API is running....'));
-}
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'SkillPath AI Backend is Running 🚀'
+  });
+});
 
 // Error Handling Middleware
 app.use(notFound);
